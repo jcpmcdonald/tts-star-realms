@@ -1,6 +1,7 @@
--- #include CalculateGUI
 
 local Calculate = {}
+#include CalculateGUI
+
 Calculate.zoneId = '162f27'
 
 -- Stores card choices (keep/scrap, A or B)
@@ -27,7 +28,13 @@ Calculate.combatTokenGuid = 'be47c5'
 Calculate.combatToken = {}
 
 Calculate.tableGuid = '4ee1f2'
-Calculate.inactiveButtonColour = color(255, 255, 255, 0.6)
+
+Calculate.calculationZones = {
+    {
+        zoneId = '162f27',
+        outputCombat = 'be47c5'
+    }
+}
 
 function Calculate.init()
 
@@ -78,10 +85,11 @@ function Calculate.DoTheMath(draggedObj)
         table.insert(allCards, draggedObj)
     end
     
+    -- Get all the cards to use in the calculation (resting cards with names)
     local cards = {}
     for i, e in pairs(allCards) do
         local name = e.getName()
-        if name ~= nil and name ~= "" and e.name == "Card" then
+        if name ~= nil and name ~= "" and e.name == "Card" and e.resting then
             table.insert(cards, {
                 name = name,
                 obj = e
@@ -110,6 +118,8 @@ function Calculate.DoTheMath(draggedObj)
         if CardLibrary[name].main.xor ~= nil then
             
             local xor = CardLibrary[name].main.xor
+            
+            -- Create the buttons
             if card.obj.getButtons() == nil then
                 local keys = {}
                 for k,v in pairs(xor) do
@@ -126,22 +136,17 @@ function Calculate.DoTheMath(draggedObj)
                     end
                 end
                 
-                AddChoiceButtons({
+                Calculate.AddArbitraryChoiceButtons({
                     obj = card.obj,
                     isBase = CardLibrary[name].type == "Base",
-                    leftClickFunction = "OptA",
                     leftText = keys[1],
-                    leftColor = color(0, 200, 0, 1),
-                    leftHoverColor = color(0, 200, 0, 1),
-                    rightClickFunction = "OptB",
                     rightText = keys[2],
-                    rightColor = Calculate.inactiveButtonColour,
-                    rightHoverColor = color(0, 200, 0, 1)
                 })
                 
                 Calculate.cardStates[card.obj.getGUID()] = { choiceA = true }
             end
             
+            -- Do the math on the chosen item
             local firstChoice = true
             for k,v in pairs(xor) do
                 if (firstChoice and Calculate.cardStates[card.obj.getGUID()].choiceA) or (not firstChoice and not Calculate.cardStates[card.obj.getGUID()].choiceA) then
@@ -166,17 +171,9 @@ function Calculate.DoTheMath(draggedObj)
         
         if CardLibrary[name].scrap ~= nil then
             if card.obj.getButtons() == nil then
-                AddChoiceButtons({
+                Calculate.AddScrapChoiceButtons({
                     obj = card.obj,
-                    isBase = CardLibrary[name].type == "Base",
-                    leftClickFunction = "Keep",
-                    leftText = "Keep",
-                    leftColor = color(0, 200, 0, 1),
-                    leftHoverColor = color(0, 200, 0, 1),
-                    rightClickFunction = "Scrap",
-                    rightText = "Scrap",
-                    rightColor = Calculate.inactiveButtonColour,
-                    rightHoverColor = color(200, 0, 0, 1)
+                    isBase = CardLibrary[name].type == "Base"
                 })
                 
                 Calculate.cardStates[card.obj.getGUID()] = { scrapping = false }
@@ -201,91 +198,4 @@ function Calculate.DoTheMath(draggedObj)
     -- log(Calculate.combatToken.getName())
     Calculate.combatToken.setName(combat .. " Combat")
     
-end
-
-function AddChoiceButtons(args)
-    local isBase = args.isBase or false;
-    
-    local rot = vector(0, 0, 0)
-    local leftButtonPos = vector(-0.6, 2, 1.9)
-    local rightButtonPos = vector(0.6, 2, 1.9)
-    if isBase then
-        log(isBase)
-        rot = vector(0, -90, 0)
-        leftButtonPos = vector(1.5, 2, 0.6)
-        rightButtonPos = vector(1.5, 2, -0.6)
-    end
-    
-    args.obj.createButton({
-        click_function = args.leftClickFunction,
-        label          = args.leftText,
-        position       = leftButtonPos,
-        rotation       = rot,
-        width          = 500,
-        height         = 300,
-        font_size      = 100,
-        color          = args.leftColor,
-        hover_color    = args.leftHoverColor,
-        press_color    = args.leftHoverColor,
-        font_color     = color(0, 0, 0, 1),
-    })
-    
-    args.obj.createButton({
-        click_function = args.rightClickFunction,
-        label          = args.rightText,
-        position       = rightButtonPos,
-        rotation       = rot,
-        width          = 500,
-        height         = 300,
-        font_size      = 100,
-        color          = args.rightColor,
-        hover_color    = args.rightHoverColor,
-        press_color    = args.rightHoverColor,
-        font_color     = color(0, 0, 0, 1),
-    })
-end
-
-function Keep(obj, player_clicker_color, alt_click)
-    -- Keep
-    obj.editButton({ index = 0, color = color(0, 200, 0, 1) })
-    
-    -- scrap
-    obj.editButton({ index = 1, color = Calculate.inactiveButtonColour })
-    
-    Calculate.cardStates[obj.getGUID()].scrapping = false
-    Calculate.DoTheMath()
-end
-
-function Scrap(obj, player_clicker_color, alt_click)
-    -- keep
-    obj.editButton({ index = 0, color = Calculate.inactiveButtonColour })
-    
-    -- scrap
-    obj.editButton({ index = 1, color = color(200, 0, 0, 1) })
-    
-    Calculate.cardStates[obj.getGUID()].scrapping = true
-    Calculate.DoTheMath()
-end
-
-
-function OptA(obj, player_clicker_color, alt_click)
-    -- OptA
-    obj.editButton({ index = 0, color = color(0, 200, 0, 1) })
-    
-    -- OptB
-    obj.editButton({ index = 1, color = Calculate.inactiveButtonColour })
-    
-    Calculate.cardStates[obj.getGUID()].choiceA = true
-    Calculate.DoTheMath()
-end
-
-function OptB(obj, player_clicker_color, alt_click)
-    -- OptA
-    obj.editButton({ index = 0, color = Calculate.inactiveButtonColour })
-    
-    -- OptB
-    obj.editButton({ index = 1, color = color(0, 200, 0, 1) })
-    
-    Calculate.cardStates[obj.getGUID()].choiceA = false
-    Calculate.DoTheMath()
 end
