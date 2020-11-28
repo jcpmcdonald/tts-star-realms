@@ -1,0 +1,23 @@
+
+
+When playing 2 players:
+- Share a faction
+- Don't share a faction
+- Manual
+- Random
+
+
+3 Players:
+- One common faction
+- Share each faction with another player
+- Manual
+- Random
+
+
+4 Players:
+Hydra:
+- Share each faction with another player
+
+Team:
+- Share faction with ally & opponent
+- Share faction with each opponent

@@ -1,0 +1,639 @@
+
+CardLibrary = {
+    ['Scout'] = {
+        set = "Core Set",
+        name = "Scout",
+        faction = "Unaligned",
+        type = "Ship",
+        text = "Add 1 Trade",
+        main = {
+            trade = 1,
+        }
+    },
+    ['Viper'] = {
+        set = "Core Set",
+        name = "Viper",
+        faction = "Unaligned",
+        type = "Ship",
+        text = "Add 1 Combat",
+        main = {
+            combat = 1
+        },
+    },
+    ["Bioformer"] = {
+        set = "Colony Wars",
+        name = "Bioformer",
+        faction = "Blob",
+        type = "Base",
+        cost = 4,
+        defense = 4,
+        main = {
+            combat = 3,
+        },
+        scrap = {
+            trade = 3,
+        },
+    },
+    ["Cargo Pod"] = {
+        set = "Colony Wars",
+        name = "Cargo Pod",
+        faction = "Blob",
+        type = "Ship",
+        cost = 3,
+        main = {
+            trade = 3,
+        },
+        ally = {
+            combat = 3,
+        },
+        scrap = {
+            combat = 3,
+        },
+    },
+    ["Leviathan"] = {
+        set = "Colony Wars",
+        name = "Leviathan",
+        faction = "Blob",
+        type = "Ship",
+        cost = 8,
+        main = {
+            combat = 9,
+            draw = 1,
+            destroyBase = 1,
+        },
+        ally = {
+            special = "Acquire a card of cost three or less for free and put it into your hand.",
+        },
+    },
+    ["Moonwurm"] = {
+        set = "Colony Wars",
+        name = "Moonwurm",
+        faction = "Blob",
+        type = "Ship",
+        cost = 7,
+        main = {
+            combat = 8,
+            draw = 1,
+        },
+        ally = {
+            special = "Acquire a cost two or less for free and put it into your hand.",
+        },
+    },
+    ["Parasite"] = {
+        set = "Colony Wars",
+        name = "Parasite",
+        faction = "Blob",
+        type = "Ship",
+        cost = 5,
+        main = {
+            xor = {
+                combat = 6,
+                special = "Acquire a card of cost six or less for free.",
+            },
+        },
+        ally = {
+            draw = 1,
+        },
+    },
+    ["Plasma Vent"] = {
+        set = "Colony Wars",
+        name = "Plasma Vent",
+        faction = "Blob",
+        type = "Base",
+        cost = 6,
+        defense = 5,
+        main = {
+            combat = 4,
+            special = "When you acquire this card, if you've played a Blob card this turn, you may put this card directly into your hand.",
+        },
+        scrap = {
+            destroyBase = 1,
+        },
+    },
+    ["Predator"] = {
+        set = "Colony Wars",
+        name = "Predator",
+        faction = "Blob",
+        type = "Ship",
+        cost = 2,
+        main = {
+            combat = 4,
+        },
+        ally = {
+            draw = 1,
+        },
+    },
+    ["Ravager"] = {
+        set = "Colony Wars",
+        name = "Ravager",
+        faction = "Blob",
+        type = "Ship",
+        cost = 3,
+        main = {
+            combat = 6,
+            scrapFromTradeRow = 2,
+        },
+    },
+    ["Stellar Reef"] = {
+        set = "Colony Wars",
+        name = "Stellar Reef",
+        faction = "Blob",
+        type = "Base",
+        cost = 2,
+        defense = 3,
+        main = {
+            trade = 1,
+        },
+        scrap = {
+            combat = 3,
+        },
+    },
+    ["Swarmer"] = {
+        set = "Colony Wars",
+        name = "Swarmer",
+        faction = "Blob",
+        type = "Ship",
+        cost = 1,
+        main = {
+            combat = 3,
+            scrapFromTradeRow = 1,
+        },
+        ally = {
+            combat = 2,
+        },
+    },
+    ["Battle Bot"] = {
+        set = "Colony Wars",
+        name = "Battle Bot",
+        faction = "Machine Cult",
+        type = "Ship",
+        cost = 1,
+        main = {
+            combat = 2,
+            scrapHand = 1,
+        },
+        ally = {
+            combat = 2,
+        },
+    },
+    ["Convoy Bot"] = {
+        set = "Colony Wars",
+        name = "Convoy Bot",
+        faction = "Machine Cult",
+        type = "Ship",
+        cost = 3,
+        main = {
+            combat = 4,
+            scrapHandOrDiscard = 1,
+        },
+        ally = {
+            combat = 2,
+        },
+    },
+    ["Frontier Station"] = {
+        set = "Colony Wars",
+        name = "Frontier Station",
+        faction = "Machine Cult",
+        type = "Base",
+        cost = 6,
+        defense = 6,
+        outpost = true,
+        main = {
+            xor = {
+                trade = 2,
+                combat = 3,
+            },
+        },
+    },
+    ["Mech Cruiser"] = {
+        set = "Colony Wars",
+        name = "Mech Cruiser",
+        faction = "Machine Cult",
+        type = "Ship",
+        cost = 5,
+        main = {
+            combat = 6,
+            scrapHandOrDiscard = 1,
+        },
+        ally = {
+            destroyBase = 1,
+        },
+    },
+    ["Mining Mech"] = {
+        set = "Colony Wars",
+        name = "Mining Mech",
+        faction = "Machine Cult",
+        type = "Ship",
+        cost = 4,
+        main = {
+            trade = 3,
+            scrapHandOrDiscard = 1,
+        },
+        ally = {
+            combat = 3,
+        },
+    },
+    ["Repair Bot"] = {
+        set = "Colony Wars",
+        name = "Repair Bot",
+        faction = "Machine Cult",
+        type = "Ship",
+        cost = 2,
+        main = {
+            trade = 2,
+            scrapDiscard = 1,
+        },
+        scrap = {
+            combat = 2,
+        },
+    },
+    ["Stealth Tower"] = {
+        set = "Colony Wars",
+        name = "Stealth Tower",
+        faction = "Machine Cult",
+        type = "Base",
+        cost = 5,
+        defense = 5,
+        outpost = true,
+        main = {
+            special = "Until your turn ends, Stealth Tower becomes a copy of any base in play. Stealth Tower has that base's faction in addition to Machine Cult.",
+        },
+    },
+    ["The Incinerator"] = {
+        set = "Colony Wars",
+        name = "The Incinerator",
+        faction = "Machine Cult",
+        type = "Base",
+        cost = 8,
+        defense = 6,
+        outpost = true,
+        main = {
+            scrapHandOrDiscard = 2,
+        },
+        ally = {
+            special = "Gain 2 Combat for each card scrapped from your hand and/or discard pile this turn.",
+        },
+    },
+    ["The Oracle"] = {
+        set = "Colony Wars",
+        name = "The Oracle",
+        faction = "Machine Cult",
+        type = "Base",
+        cost = 4,
+        defense = 5,
+        outpost = true,
+        main = {
+            scrapHand = 1,
+        },
+        ally = {
+            combat = 3,
+        },
+    },
+    ["The Wrecker"] = {
+        set = "Colony Wars",
+        name = "The Wrecker",
+        faction = "Machine Cult",
+        type = "Ship",
+        cost = 7,
+        main = {
+            combat = 6,
+            scrapHandOrDiscard = 2,
+        },
+        ally = {
+            draw = 1,
+        },
+    },
+    ["Warning Beacon"] = {
+        set = "Colony Wars",
+        name = "Warning Beacon",
+        faction = "Machine Cult",
+        type = "Base",
+        cost = 2,
+        defense = 2,
+        outpost = true,
+        main = {
+            combat = 2,
+            special = "When you acquire this card, if you've played a Machine Cult card this turn, you may put this card directly into your hand.",
+        },
+    },
+    ["Aging Battleship"] = {
+        set = "Colony Wars",
+        name = "Aging Battleship",
+        faction = "Star Empire",
+        type = "Ship",
+        cost = 5,
+        main = {
+            combat = 5,
+        },
+        ally = {
+            draw = 1,
+        },
+        scrap = {
+            combat = 2,
+            draw = 2,
+        },
+    },
+    ["Command Center"] = {
+        set = "Colony Wars",
+        name = "Command Center",
+        faction = "Star Empire",
+        type = "Base",
+        cost = 4,
+        defense = 4,
+        outpost = true,
+        main = {
+            trade = 2,
+            special = "Whenever you play a Star Empire ship, gain 2 Combat.",
+        },
+    },
+    ["Emperor's Dreadnaught"] = {
+        set = "Colony Wars",
+        name = "Emperor's Dreadnaught",
+        faction = "Star Empire",
+        type = "Ship",
+        cost = 8,
+        main = {
+            combat = 8,
+            draw = 1,
+            opponentDiscards = 1,
+            special = "When you acquire this card, if you've played a Star Empire card this turn, you may put this card directly into your hand.",
+        },
+    },
+    ["Falcon"] = {
+        set = "Colony Wars",
+        name = "Falcon",
+        faction = "Star Empire",
+        type = "Ship",
+        cost = 3,
+        main = {
+            combat = 2,
+            draw = 1,
+        },
+        scrap = {
+            opponentDiscards = 1,
+        },
+    },
+    ["Gunship"] = {
+        set = "Colony Wars",
+        name = "Gunship",
+        faction = "Star Empire",
+        type = "Ship",
+        cost = 4,
+        main = {
+            combat = 5,
+            opponentDiscards = 1,
+        },
+        scrap = {
+            trade = 4,
+        },
+    },
+    ["Heavy Cruiser"] = {
+        set = "Colony Wars",
+        name = "Heavy Cruiser",
+        faction = "Star Empire",
+        type = "Ship",
+        cost = 5,
+        main = {
+            combat = 4,
+            draw = 1,
+        },
+        ally = {
+            draw = 1,
+        },
+    },
+    ["Imperial Palace"] = {
+        set = "Colony Wars",
+        name = "Imperial Palace",
+        faction = "Star Empire",
+        type = "Base",
+        cost = 7,
+        defense = 6,
+        outpost = true,
+        main = {
+            draw = 1,
+            opponentDiscards = 1,
+            special = " .",
+        },
+        ally = {
+            combat = 4,
+        },
+    },
+    ["Lancer"] = {
+        set = "Colony Wars",
+        name = "Lancer",
+        faction = "Star Empire",
+        type = "Ship",
+        cost = 2,
+        main = {
+            combat = 4,
+            special = "If an opponent contols a base, gain an additional 2 Combat.",
+        },
+        ally = {
+            opponentDiscards = 1,
+        },
+    },
+    ["Orbital Platform"] = {
+        set = "Colony Wars",
+        name = "Orbital Platform",
+        faction = "Star Empire",
+        type = "Base",
+        cost = 3,
+        defense = 4,
+        main = {
+            special = "Discard a card. If you do, gain a card.",
+        },
+        ally = {
+            combat = 3,
+        },
+    },
+    ["Star Barge"] = {
+        set = "Colony Wars",
+        name = "Star Barge",
+        faction = "Star Empire",
+        type = "Ship",
+        cost = 1,
+        main = {
+            trade = 2,
+        },
+        ally = {
+            combat = 2,
+            opponentDiscards = 1,
+        },
+    },
+    ["Supply Depot"] = {
+        set = "Colony Wars",
+        name = "Supply Depot",
+        faction = "Star Empire",
+        type = "Base",
+        cost = 6,
+        defense = 5,
+        outpost = true,
+        main = {
+            special = "Discard up to 2 cards. Gain 2 Trade or 2 Combat for each card discarded this way.",
+        },
+        ally = {
+            draw = 1,
+        },
+    },
+    ["Central Station"] = {
+        set = "Colony Wars",
+        name = "Central Station",
+        faction = "Trade Federation",
+        type = "Base",
+        cost = 4,
+        defense = 5,
+        main = {
+            trade = 2,
+            special = "If you have three or more bases in play (including this one) gain 4 Authority and gain a card.",
+        },
+    },
+    ["Colony Seed Ship"] = {
+        set = "Colony Wars",
+        name = "Colony Seed Ship",
+        faction = "Trade Federation",
+        type = "Ship",
+        cost = 5,
+        main = {
+            trade = 3,
+            combat = 3,
+            authority = 3,
+            special = "When you acquire this card, if you've played a Trade Federation card this turn, you may put this card directly into your hand.",
+        },
+    },
+    ["Factory World"] = {
+        set = "Colony Wars",
+        name = "Factory World",
+        faction = "Trade Federation",
+        type = "Base",
+        cost = 8,
+        defense = 6,
+        outpost = true,
+        main = {
+            trade = 3,
+            special = "Put the next ship or base you acquire this turn into your hand.",
+        },
+    },
+    ["Federation Shipyard"] = {
+        set = "Colony Wars",
+        name = "Federation Shipyard",
+        faction = "Trade Federation",
+        type = "Base",
+        cost = 6,
+        defense = 6,
+        outpost = true,
+        main = {
+            trade = 2,
+        },
+        ally = {
+            special = "Put the next ship or base you acquire this turn on top of your deck.",
+        },
+    },
+    ["Frontier Ferry"] = {
+        set = "Colony Wars",
+        name = "Frontier Ferry",
+        faction = "Trade Federation",
+        type = "Ship",
+        cost = 4,
+        main = {
+            trade = 3,
+            authority = 4,
+        },
+        scrap = {
+            destroyBase = 1,
+        },
+    },
+    ["Loyal Colony"] = {
+        set = "Colony Wars",
+        name = "Loyal Colony",
+        faction = "Trade Federation",
+        type = "Base",
+        cost = 7,
+        defense = 6,
+        main = {
+            trade = 3,
+            combat = 3,
+            authority = 3,
+        },
+    },
+    ["Patrol Cutter"] = {
+        set = "Colony Wars",
+        name = "Patrol Cutter",
+        faction = "Trade Federation",
+        type = "Ship",
+        cost = 3,
+        main = {
+            trade = 2,
+            combat = 3,
+        },
+        ally = {
+            authority = 4,
+        },
+    },
+    ["Peacekeeper"] = {
+        set = "Colony Wars",
+        name = "Peacekeeper",
+        faction = "Trade Federation",
+        type = "Ship",
+        cost = 6,
+        main = {
+            combat = 6,
+            authority = 6,
+        },
+        ally = {
+            draw = 1,
+        },
+    },
+    ["Solar Skiff"] = {
+        set = "Colony Wars",
+        name = "Solar Skiff",
+        faction = "Trade Federation",
+        type = "Ship",
+        cost = 1,
+        main = {
+            trade = 2,
+        },
+        ally = {
+            draw = 1,
+        },
+    },
+    ["Storage Silo"] = {
+        set = "Colony Wars",
+        name = "Storage Silo",
+        faction = "Trade Federation",
+        type = "Base",
+        cost = 2,
+        defense = 3,
+        main = {
+            authority = 2,
+        },
+        ally = {
+            trade = 2,
+        },
+    },
+    ["Trade Hauler"] = {
+        set = "Colony Wars",
+        name = "Trade Hauler",
+        faction = "Trade Federation",
+        type = "Ship",
+        cost = 2,
+        main = {
+            trade = 3,
+        },
+        ally = {
+            authority = 3,
+        },
+    },
+    ["Explorer"] = {
+        set = "Colony Wars",
+        name = "Explorer",
+        faction = "Unaligned",
+        type = "Ship",
+        cost = 2,
+        main = {
+            trade = 2,
+        },
+        scrap = {
+            combat = 2,
+        },
+    },
+}

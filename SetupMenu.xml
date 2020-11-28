@@ -1,0 +1,197 @@
+<!-- This can't be imported from the rest of the files, so copy/paste from SetupMenu.xml to Global -->
+
+<Defaults>
+    <Text
+        outline="#000000ff"
+        color="#eeeeeeff"
+        fontSize="20"/>
+    <Toggle
+        textOutline="#000000ff"
+        textColor="#eeeeeeff"
+        fontSize="16"
+        />
+</Defaults>
+<Panel
+    active="true"
+    id="calculations"
+    height="100"
+    width="100"
+    allowDragging="true"
+    color="#ff0000aa"
+    offsetXY="0 0"
+    returnToOriginalPositionWhenReleased="false">
+    
+</Panel>
+
+<Panel
+    active="false"
+    id="setupScreen"
+    height="900"
+    width="850"
+    allowDragging="true"
+    color="#ff0000aa"
+    returnToOriginalPositionWhenReleased="false">
+    <Image image="MenuBG" />
+    <Text
+        active="false"
+        text="Scripted by John McDonald"
+        fontSize="20"
+        offsetXY="0 60"
+        color="#ffffffff"
+        outline="#000000ff"
+        height="50"
+        width="500" />
+    
+        
+    <!-- <Panel
+        height="200"
+        width="711"
+        rectAlignment="UpperLeft"
+        color="#00000077"
+        >
+        
+    </Panel> -->
+    
+    <TableLayout
+        height="350"
+        rectAlignment="UpperLeft"
+        columnWidths="170 170 170 170 170"
+        cellBackgroundColor="clear"
+        offsetXY="0 -100">
+        <Row>
+            <Cell columnSpan="5"><Text width="500" height="100" fontSize="30">Star Realms</Text></Cell>
+        </Row>
+        <Row></Row>
+        <Row>
+            <Cell><Text># Players(s):</Text></Cell>
+            <Cell columnSpan="3">
+                <ToggleGroup height="40" width="350" offsetXY="0 40">
+                    <HorizontalLayout>
+                        <ToggleButton id="numPlayers2" onValueChanged="select2Players" value="2" fontSize="20">2 Players</ToggleButton>
+                        <ToggleButton id="numPlayers3" onValueChanged="select3Players" value="3" fontSize="20">3 Players</ToggleButton>
+                        <ToggleButton id="numPlayers4" onValueChanged="select4Players" value="4" fontSize="20">4 Players</ToggleButton>
+                    </HorizontalLayout>
+                </ToggleGroup>
+            </Cell>
+        </Row>
+        <Row></Row>
+        <Row dontUseTableRowBackground="true" color="#aaaaaa55">
+            <Cell><Text>Deck(s):</Text></Cell>
+            <Cell><Toggle onValueChanged="selectStandardDeck" isOn="true">Standard Deck</Toggle></Cell>
+            <Cell><Toggle onValueChanged="selectColonyWarsDeck">Colony Wars</Toggle></Cell>
+            <Cell><Toggle onValueChanged="selectFrontiersDeck">Frontiers</Toggle></Cell>
+        </Row>
+        <Row>
+            <Cell><Text>Crisis:</Text></Cell>
+            <Cell><Toggle>Bases &amp; Battleships</Toggle></Cell>
+            <Cell><Toggle>Fleets &amp; Fortresses</Toggle></Cell>
+            <Cell><Toggle>Events</Toggle></Cell>
+            <Cell><Toggle>Heroes</Toggle></Cell>
+        </Row>
+        <Row dontUseTableRowBackground="true" color="#aaaaaa55">
+            <Cell><Text>United:</Text></Cell>
+            <Cell><Toggle>Assault</Toggle></Cell>
+            <Cell><Toggle>Command</Toggle></Cell>
+            <Cell><Toggle>Missions</Toggle></Cell>
+            <Cell><Toggle>Heroes</Toggle></Cell>
+        </Row>
+        <Row>
+            <Cell><Text>Gambits:</Text></Cell>
+            <Cell><Toggle>Gambit Set</Toggle></Cell>
+            <Cell><Toggle>Cosmic Gambit Set</Toggle></Cell>
+        </Row>
+        <Row dontUseTableRowBackground="true" color="#aaaaaa55">
+            <Cell><Text>Other:</Text></Cell>
+            <Cell><Toggle>Scenarios</Toggle></Cell>
+            <Cell><Toggle>Stellar Allies</Toggle></Cell>
+            <Cell><Toggle>Promo Pack 1</Toggle></Cell>
+        </Row>
+        <Row>
+            <Cell><Text>Commanders:</Text></Cell>
+            <Dropdown id="Commanders" onValueChanged="commandersOptionSelected" width="500">
+                <Option>None</Option>
+                <Option id="Random">Random</Option>
+                <Option>Random incl. Lost Fleet</Option>
+                <!-- <Option>Manual</Option> -->
+                <Option>2 Player: Share a faction</Option>
+                <Option>2 Player: Do not share a faction</Option>
+                <Option>3 Player: One common faction</Option>
+                <Option>3 Player: Share each faction with another player</Option>
+                <Option>3 Player: Balanced</Option>
+                <Option>4 Player: Hydra: Share each faction with another player</Option>
+                <Option>2 v 2: Share faction with ally &amp; opponent</Option>
+                <Option>2 v 2: Share faction with each opponent</Option>
+                <Option>2 v 2: Balanced</Option>
+            </Dropdown>
+        </Row>
+        <Row></Row>
+        <!-- <Row>
+            <Cell><Text>Player 1:</Text></Cell>
+            <Dropdown id="Player1Commander" onValueChanged="optionSelected" width="500" interactable="false">
+                <Option selected="true">Random Commander</Option>
+                <Option>Random Commander incl. Lost Fleet</Option>
+                <Option>The Alliance (Yellow + Blue)</Option>
+                <Option>The Coalition (Blue + Red)</Option>
+                <Option>The Unity (Red + Green)</Option>
+                <Option>The Pact (Green + Blue)</Option>
+                <Option>The Union (Green + Yellow)</Option>
+                <Option>The Allignment (Yellow + Red)</Option>
+                <Option>Lost Fleet (Unique)</Option>
+            </Dropdown>
+        </Row> -->
+    </TableLayout>
+    <!--
+    <HorizontalLayout height="100" childAlignment="UpperLeft" offsetXY="0 -50">
+        <Panel>
+            <Text id="useBonus1Text" text='Player 1:' alignment="UpperLeft" backgroundColor="#ff000055" />
+            <Dropdown id="Player1Commander" onValueChanged="optionSelected" width="300" interactable="false" offsetXY="0 0">
+                <Option selected="true">Random Commander</Option>
+                <Option>Random Commander incl. Lost Fleet</Option>
+                <Option>The Alliance (Yellow + Blue)</Option>
+                <Option>The Coalition (Blue + Red)</Option>
+                <Option>The Unity (Red + Green)</Option>
+                <Option>The Pact (Green + Blue)</Option>
+                <Option>The Union (Green + Yellow)</Option>
+                <Option>The Allignment (Yellow + Red)</Option>
+                <Option>Lost Fleet (Unique)</Option>
+            </Dropdown>
+            <Dropdown id="Player2Commander" onValueChanged="optionSelected" width="300" interactable="false" offsetXY="0 -200">
+                <Option selected="true">Random Commander</Option>
+                <Option>Random Commander incl. Lost Fleet</Option>
+                <Option>The Alliance (Yellow + Blue)</Option>
+                <Option>The Coalition (Blue + Red)</Option>
+                <Option>The Unity (Red + Green)</Option>
+                <Option>The Pact (Green + Blue)</Option>
+                <Option>The Union (Green + Yellow)</Option>
+                <Option>The Allignment (Yellow + Red)</Option>
+                <Option>Lost Fleet (Unique)</Option>
+            </Dropdown>
+        </Panel>
+    </HorizontalLayout> -->
+    
+    <Button
+        onClick="dismissSetup"
+        height="40"
+        width="40"
+        color="#ffffffff"
+        text="X"
+        textColor="#000000ff"
+        fontStyle="Bold"
+        fontSize="20"
+        rectAlignment="UpperRight"
+        />
+    <Button
+        height="40"
+        width="130"
+        offsetXY="-75 -390"
+        onClick="setupGame">
+        Start Game
+    </Button>
+    <Button
+        height="40"
+        width="130"
+        offsetXY="75 -390"
+        onClick="skipSetup">
+        Skip Setup
+    </Button>
+</Panel>

@@ -1,0 +1,289 @@
+local SetupCommanders = {}
+
+
+SetupCommanders.Factions = {
+    YELLOW = 1,
+    RED = 2,
+    BLUE = 3,
+    GREEN = 4
+}
+
+SetupCommanders.CommandDecks = {
+    {
+        name = 'The Alliance',
+        factions = {SetupCommanders.Factions.YELLOW, SetupCommanders.Factions.BLUE},
+        bagId = '1a8f72'
+    },
+    {
+        name = 'The Coalition',
+        factions = {SetupCommanders.Factions.BLUE, SetupCommanders.Factions.RED},
+        bagId = '35319b'
+    },
+    {
+        name = 'The Unity',
+        factions = {SetupCommanders.Factions.RED, SetupCommanders.Factions.GREEN},
+        bagId = 'e1c90b'
+    },
+    {
+        name = 'The Pact',
+        factions = {SetupCommanders.Factions.GREEN, SetupCommanders.Factions.BLUE},
+        bagId = '577f21'
+    },
+    {
+        name = 'The Union',
+        factions = {SetupCommanders.Factions.GREEN, SetupCommanders.Factions.YELLOW},
+        bagId = '2344e6'
+    },
+    {
+        name = 'The Allignment',
+        factions = {SetupCommanders.Factions.YELLOW, SetupCommanders.Factions.RED},
+        bagId = '447301'
+    },
+    {
+        name = 'Lost Fleet',
+        factions = {},
+        bagId = 'e631e1'
+    },
+}
+
+function SetupCommanders.GetCommanders()
+    
+    if not SetupCommanders.HasCorrectPlayerCount() then
+        print("Invalid selection")
+        return 1
+    end
+    
+    if Setup.CommanderOption == SetupUI.CommanderOptionsEnum.THREE_BALANCED then
+        if math.random(1, 2) == 1 then
+            Setup.CommanderOption = SetupUI.CommanderOptionsEnum.THREE_ONE_COMMON_FACTION
+        else
+            Setup.CommanderOption = SetupUI.CommanderOptionsEnum.THREE_SHARE_EACH_FACTION
+        end
+    end
+    
+    if Setup.CommanderOption == SetupUI.CommanderOptionsEnum.TWOvTWO_BALANCED then
+        if math.random(1, 2) == 1 then
+            Setup.CommanderOption = SetupUI.CommanderOptionsEnum.TWOvTWO_SHARE_FACTION_WITH_ALLY_AND_OPPONENT
+        else
+            Setup.CommanderOption = SetupUI.CommanderOptionsEnum.TWOvTWO_SHARE_FACTION_WITH_EACH_OPPONENT
+        end
+    end
+    
+    local commanders = nil
+    
+    if Setup.CommanderOption == SetupUI.CommanderOptionsEnum.NONE then
+        -- Do nothing
+    elseif Setup.CommanderOption == SetupUI.CommanderOptionsEnum.RANDOM then
+        commanders = shuffle({1, 2, 3, 4, 5, 6})
+        
+    elseif Setup.CommanderOption == SetupUI.CommanderOptionsEnum.RANDOM_W_LOST_FLEET then
+        commanders = shuffle({1, 2, 3, 4, 5, 6, 7})
+        
+    elseif Setup.CommanderOption == SetupUI.CommanderOptionsEnum.MANUAL then
+    elseif Setup.CommanderOption == SetupUI.CommanderOptionsEnum.TWO_SHARE_FACTION then
+        local sharedFaction = math.random(1, 4)
+        local commandersWithFaction = filterCommandersForFaction({1, 2, 3, 4, 5, 6}, sharedFaction)
+        commanders = shuffle(commandersWithFaction)
+        
+    elseif Setup.CommanderOption == SetupUI.CommanderOptionsEnum.TWO_DO_NOT_SHARE_FACTION then
+        -- Randomize a commander for the first player
+        local randomCommanderIndex = math.random(1, 6)
+        local randomCommander = SetupCommanders.CommandDecks[randomCommanderIndex]
+        
+        -- Filter out commanders that share one colour or the other
+        local factionsWithoutColour1 = filterCommandersAgainstFaction({1, 2, 3, 4, 5, 6}, randomCommander.factions[1])
+        local factionWithoutColour1and2 = filterCommandersAgainstFaction(factionsWithoutColour1, randomCommander.factions[2])[1]  -- There's only ever 1
+        commanders = {randomCommanderIndex, factionWithoutColour1and2 }
+        
+    elseif Setup.CommanderOption == SetupUI.CommanderOptionsEnum.THREE_ONE_COMMON_FACTION then
+        -- Select the common faction
+        local sharedFaction = math.random(1, 4)
+        local commandersWithFaction = filterCommandersForFaction({1, 2, 3, 4, 5, 6}, sharedFaction)
+        commanders = shuffle(commandersWithFaction)
+        --pprint(shuffled)
+        
+    elseif Setup.CommanderOption == SetupUI.CommanderOptionsEnum.THREE_SHARE_EACH_FACTION then
+        local factions = shuffle({1, 2, 3, 4})
+        local player1 = getCommanderWithFactions(factions[1], factions[2])
+        local player2 = getCommanderWithFactions(factions[2], factions[3])
+        local player3 = getCommanderWithFactions(factions[3], factions[1])
+        commanders = {player1, player2, player3}
+        
+    elseif Setup.CommanderOption == SetupUI.CommanderOptionsEnum.FOUR_SHARE_EACH_FACTION  then
+        local factions = shuffle({1, 2, 3, 4})
+        local player1 = getCommanderWithFactions(factions[1], factions[2])
+        local player2 = getCommanderWithFactions(factions[2], factions[3])
+        local player3 = getCommanderWithFactions(factions[3], factions[4])
+        local player4 = getCommanderWithFactions(factions[4], factions[1])
+        commanders = {player1, player2, player3, player4}
+        
+    elseif Setup.CommanderOption == SetupUI.CommanderOptionsEnum.TWOvTWO_SHARE_FACTION_WITH_ALLY_AND_OPPONENT  then
+        local factions = shuffle({1, 2, 3, 4})
+        local player1 = getCommanderWithFactions(factions[1], factions[2])
+        local player2 = getCommanderWithFactions(factions[2], factions[3])
+        
+        local player3 = getCommanderWithFactions(factions[3], factions[4])
+        local player4 = getCommanderWithFactions(factions[4], factions[1])
+        commanders = {player1, player2, player3, player4}
+            
+    elseif Setup.CommanderOption == SetupUI.CommanderOptionsEnum.TWOvTWO_SHARE_FACTION_WITH_EACH_OPPONENT  then
+        local factions = shuffle({1, 2, 3, 4})
+        local player1 = getCommanderWithFactions(factions[1], factions[2])
+        local player2 = getCommanderWithFactions(factions[3], factions[4])
+        
+        local player3 = getCommanderWithFactions(factions[1], factions[3])
+        local player4 = getCommanderWithFactions(factions[2], factions[4])
+        commanders = {player1, player2, player3, player4}
+    end
+    
+    return commanders
+end
+
+function SetupCommanders.HasCorrectPlayerCount()
+    if (Setup.CommanderOption == SetupUI.CommanderOptionsEnum.TWO_SHARE_FACTION or
+        Setup.CommanderOption == SetupUI.CommanderOptionsEnum.TWO_DO_NOT_SHARE_FACTION) and
+        Setup.PlayerCount ~= 2 then
+        return false
+    end
+    
+    if (Setup.CommanderOption == SetupUI.CommanderOptionsEnum.THREE_ONE_COMMON_FACTION or
+        Setup.CommanderOption == SetupUI.CommanderOptionsEnum.THREE_SHARE_EACH_FACTION) and
+        Setup.PlayerCount ~= 3 then
+        return false
+    end
+    
+    if (Setup.CommanderOption == SetupUI.CommanderOptionsEnum.FOUR_SHARE_EACH_FACTION or
+        Setup.CommanderOption == SetupUI.CommanderOptionsEnum.TWOvTWO_SHARE_FACTION_WITH_ALLY_AND_OPPONENT or
+        Setup.CommanderOption == SetupUI.CommanderOptionsEnum.TWOvTWO_SHARE_FACTION_WITH_EACH_OPPONENT) and
+        Setup.PlayerCount ~= 4 then
+        return false
+    end
+    
+    return true
+end
+
+function SetupCommanders.DealCommanderToPlayer(commanderId, playerIndex, seatNum)
+    local player = Setup.Seats[playerIndex]
+    local origDeck = getObjectFromGUID(player.drawDeck.id)
+    origDeck.destruct()
+    
+    local commander = SetupCommanders.CommandDecks[commanderId]
+    local commanderBag = getObjectFromGUID(commander.bagId)
+    commanderBag.takeObject({
+        position = player.drawDeck.position + Vector(0, 3, 0),
+        rotation = player.drawDeck.rotation,
+        callback_function = function(obj) breakUpCommanderDeck(obj, commander, player, seatNum) end
+    })
+end
+
+function breakUpCommanderDeck(commanderDeck, commander, player, seatNum)
+    function breakUpCommanderDeck_co()
+        -- Commander card
+        commanderDeck.takeObject({
+            position = player.commanderPosition,
+        })
+        
+        -- Gambits
+        commanderDeck.takeObject({
+            position = player.gambitPositions[1],
+        })
+        commanderDeck.takeObject({
+            position = player.gambitPositions[2],
+        })
+        
+        -- Health tracking cards, delete them
+        commanderDeck.takeObject({
+            position = {0, 5, 0},
+            callback_function = function(obj) obj.destruct() end
+        })
+        commanderDeck.takeObject({
+            position = {0, 4, 0},
+            callback_function = function(obj) obj.destruct() end
+        })
+        
+        commanderDeck.flip()
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        coroutine.yield(0)
+        
+        -- The bottom card (now the top card) is the super card. Add it to the deck
+        commanderDeck.takeObject({
+            position = Setup.TradePilePosition + vector(0, 3, 0),
+        })
+        
+        commanderDeck.shuffle()
+        
+        local count = 6
+        if seatNum == 1 then
+            count = 3
+        elseif seatNum == 2 then
+            count = 4
+        elseif seatNum == 3 then
+            count = 5
+        end
+        
+        commanderDeck.deal(count, player.colour)
+        
+        return 1
+    end
+    startLuaCoroutine(Global, "breakUpCommanderDeck_co")
+end
+
+function shuffle(list)
+    shuffled = {}
+    for i, v in ipairs(list) do
+        local pos = math.random(1, #shuffled+1)
+        table.insert(shuffled, pos, v)
+    end
+    return shuffled
+end
+
+function filterCommandersForFaction(commanderIndexes, faction)
+    local filteredCommanders = {}
+    for i, commanderIndex in ipairs(commanderIndexes) do
+        local commander = SetupCommanders.CommandDecks[commanderIndex]
+        if commander.factions[1] == faction or commander.factions[2] == faction then
+            table.insert(filteredCommanders, commanderIndex)
+        end
+    end
+    return filteredCommanders
+end
+
+function filterCommandersAgainstFaction(commanderIndexes, faction)
+    local filteredCommanders = {}
+    for i, commanderIndex in ipairs(commanderIndexes) do
+        local commander = SetupCommanders.CommandDecks[commanderIndex]
+        if commander.factions[1] ~= faction and commander.factions[2] ~= faction then
+            table.insert(filteredCommanders, commanderIndex)
+        end
+    end
+    return filteredCommanders
+end
+
+function getCommanderWithFactions(faction1, faction2)
+    for i, commander in ipairs(SetupCommanders.CommandDecks) do
+        if (commander.factions[1] == faction1 and commander.factions[2] == faction2) or
+            (commander.factions[2] == faction1 and commander.factions[1] == faction2) then
+            return i
+        end
+    end
+end

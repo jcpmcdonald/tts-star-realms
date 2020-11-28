@@ -1,0 +1,107 @@
+
+local Setup = {}
+local SetupUI = {}
+
+local commanderOptions = {
+    "None",
+    "Random",
+    "Random incl. Lost Fleet",
+    "Manual",
+    "2 Player: Share a faction",
+    "2 Player: Do not share a faction",
+    "3 Player: One common faction",
+    "3 Player: Share each faction with another player",
+    "3 Player: Balanced",
+    "4 Player: Hydra: Share each faction with another player",
+    "2 v 2: Share faction with ally & opponent",
+    "2 v 2: Share faction with each opponent",
+    "2 v 2: Balanced"
+}
+
+SetupUI.CommanderOptionsEnum = {
+    NONE = 1,
+    RANDOM = 2,
+    RANDOM_W_LOST_FLEET = 3,
+    MANUAL = 4,
+    TWO_SHARE_FACTION = 5,
+    TWO_DO_NOT_SHARE_FACTION = 6,
+    THREE_ONE_COMMON_FACTION = 7,
+    THREE_SHARE_EACH_FACTION = 8,
+    THREE_BALANCED = 9,
+    FOUR_SHARE_EACH_FACTION = 10,
+    TWOvTWO_SHARE_FACTION_WITH_ALLY_AND_OPPONENT = 11,
+    TWOvTWO_SHARE_FACTION_WITH_EACH_OPPONENT = 12,
+    TWOvTWO_BALANCED = 13,
+}
+
+function SetupUI.init(setupObject)
+    Setup = setupObject
+    Setup.CommanderOption = SetupUI.CommanderOptionsEnum.NONE
+    Setup.UseStandardDeck = true
+    Setup.UseColonyWarsDeck = false
+    Setup.UseFrontiersDeck = false
+end
+
+function showSetupScreen()
+    UI.show("setupScreen")
+end
+
+function dismissSetup()
+    UI.hide("setupScreen")
+end
+
+function skipSetup()
+    UI.hide("setupScreen")
+    Setup.MenuAnchor.destruct()
+end
+
+function setupGame()
+    startLuaCoroutine(Global, "setupGame_Coroutine")
+end
+
+function select2Players()
+    Setup.PlayerCount = 2
+end
+function select3Players()
+    Setup.PlayerCount = 3
+end
+function select4Players()
+    Setup.PlayerCount = 4
+end
+
+function selectStandardDeck(player, val)
+    log(val)
+    Setup.UseStandardDeck = not Setup.UseStandardDeck
+end
+function selectColonyWarsDeck()
+    Setup.UseColonyWarsDeck = not Setup.UseColonyWarsDeck
+end
+function selectFrontiersDeck()
+    Setup.UseFrontiersDeck = not Setup.UseFrontiersDeck
+end
+
+function toggleUseBonus1()
+    Setup.UseBonus1 = not Setup.UseBonus1
+end
+function toggleUseBonus2()
+    Setup.UseBonus2 = not Setup.UseBonus2
+end
+
+function optionSelected(player, option)
+    print(id)
+end
+
+function commandersOptionSelected(player, option, id)
+    for i,val in ipairs(commanderOptions) do
+      if option == val then
+          Setup.CommanderOption = i;
+          break
+      end
+    end
+    
+    if Setup.CommanderOption == SetupUI.CommanderOptionsEnum.MANUAL then
+        UI.setAttribute("Player1Commander", "interactable", "true")
+    else
+        UI.setAttribute("Player1Commander", "interactable", "false")
+    end
+end
