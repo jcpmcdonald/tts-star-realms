@@ -75,7 +75,6 @@ Calculate.calculationZones = {
 
 function onSave()
     local data = JSON.encode(Calculate.cardStates)
-    log(data)
     return data
 end
 
@@ -126,8 +125,6 @@ function Calculate.init(save_state)
     end
     
     if save_state ~= "" then
-        log("Saved data is:")
-        log(save_state)
         Calculate.cardStates = JSON.decode(save_state)
     end
     
@@ -281,7 +278,8 @@ function Calculate.DoTheMath(calculationZone, draggedObj)
             if card.getButtons() == nil then
                 Calculate.AddScrapChoiceButtons({
                     obj = card,
-                    isBase = CardLibrary[name].type == "Base"
+                    isBase = CardLibrary[name].type == "Base",
+                    calculationZone = calculationZone
                 })
                 
                 if Calculate.cardStates[card.getGUID()] == nil then

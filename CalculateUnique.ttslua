@@ -4,7 +4,6 @@ local UniqueHandlers = {
         onLoad = function(cardObj, tablau, calculationZone)
             -- Make a global method for this card's callback
             _G['incineratorCallback' .. cardObj.getGUID()] = function(obj, color, val)
-                log("Typed: " .. val)
                 Calculate.cardStates[cardObj.getGUID()] = { value = val }
                 Calculate.DoTheMath(calculationZone)
             end
@@ -30,7 +29,6 @@ local UniqueHandlers = {
         onEnterPlay = function(cardObj, tablau, calculationZone)
             -- Make a global method for this card's callback
             _G['incineratorCallback' .. cardObj.getGUID()] = function(obj, color, val)
-                log("Typed: " .. val)
                 Calculate.cardStates[cardObj.getGUID()] = { value = val }
                 Calculate.DoTheMath(calculationZone)
             end
