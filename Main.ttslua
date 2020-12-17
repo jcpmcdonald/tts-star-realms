@@ -3,14 +3,26 @@
 #include Dev
 #include Calculate
 #include Cards
+#include Hand
 
-function onLoad()
+function onLoad(save_data)
     Setup.init()
-    Calculate.init()
+    Calculate.init(save_data)
     -- local bag = getObjectFromGUID('e1c90b')
     -- local deck = bag.takeObject({
     --     position = {7.67, 3.51, -21.34},
     --     rotation = {0, 180, 0}
     -- })
     
+end
+
+
+function onObjectEnterScriptingZone(zone, obj)
+    Calculate.onObjectEnterScriptingZone(zone, obj)
+    --Hand.onObjectEnterScriptingZone(zone, obj)
+end
+
+function onObjectLeaveScriptingZone(zone, obj)
+    Calculate.onObjectLeaveScriptingZone(zone, obj)
+    --Hand.onObjectLeaveScriptingZone(zone, obj)
 end

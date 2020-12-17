@@ -88,16 +88,20 @@ Setup.CommanderOffset = vector(0, 0, 5)
 
 function Setup.init()
     Setup.MenuAnchor = getObjectFromGUID('08a310')
-    Setup.MenuAnchor.createButton({
-        click_function = "showSetupScreen",
-        label = "Start a Game",
-        position={0,3,0},
-        width=2000,
-        height=500,
-        font_size=260,
-        scale={3, 3, 3},
-        rotation={0, 180, 0}
-    })
+    
+    -- Don't show the menu button if the anchor is gone (will happen when loading a save game)
+    if Setup.MenuAnchor ~= nil then
+        Setup.MenuAnchor.createButton({
+            click_function = "showSetupScreen",
+            label = "Start a Game",
+            position={0,3,0},
+            width=2000,
+            height=500,
+            font_size=260,
+            scale={3, 3, 3},
+            rotation={0, 180, 0}
+        })
+    end
     
     SetupUI.init(Setup)
 end

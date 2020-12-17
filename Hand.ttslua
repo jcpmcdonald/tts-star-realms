@@ -1,0 +1,41 @@
+
+local Hand = {}
+Hand.handZoneId = '2fcfc2'
+
+function Hand.onObjectEnterScriptingZone(zone, obj)
+    if Hand.handZoneId == zone.getGUID() then
+        log("Entering hand")
+        
+        obj.createButton({
+            click_function = "PlayCard",
+            label          = "Play",
+            position       = vector(1, 1, 1),
+            rotation       = vector(0, 0, 0),
+            width          = 500,
+            height         = 300,
+            font_size      = 100,
+            color          = color(0, 200, 0, 1),
+            hover_color    = color(0, 200, 0, 1),
+            press_color    = color(0, 200, 0, 1),
+            font_color     = color(0, 0, 0, 1),
+            tooltip        = "Play"
+        })
+        
+    end
+end
+
+function Hand.onObjectLeaveScriptingZone(zone, obj)
+    if Hand.handZoneId == zone.getGUID() then
+        log("Leaving hand")
+        
+        if obj.name == "Card" and obj.getButtons() ~= nil then
+            obj.clearButtons()
+            Calculate.cardStates[obj.getGUID()] = nil
+        end
+    end
+end
+
+
+function PlayCard()
+    
+end

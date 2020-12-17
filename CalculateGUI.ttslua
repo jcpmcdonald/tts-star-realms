@@ -5,7 +5,7 @@ Calculate.inactiveButtonColour = color(255, 255, 255, 0.6)
 function Calculate.AddArbitraryChoiceButtons(args)
     Calculate.AddChoiceButtons({
         obj = args.obj,
-        isBase = args.IsBase,
+        isBase = args.isBase,
         leftClickFunction = "OptA",
         leftText = args.leftText,
         leftColor = color(0, 200, 0, 1),
@@ -20,7 +20,7 @@ end
 function Calculate.AddScrapChoiceButtons(args)
     Calculate.AddChoiceButtons({
         obj = args.obj,
-        isBase = args.IsBase,
+        isBase = args.isBase,
         leftClickFunction = "Keep",
         leftText = "Keep",
         leftColor = color(0, 200, 0, 1),
@@ -39,7 +39,6 @@ function Calculate.AddChoiceButtons(args)
     local leftButtonPos = vector(-0.6, 2, 1.9)
     local rightButtonPos = vector(0.6, 2, 1.9)
     if isBase then
-        log(isBase)
         rot = vector(0, -90, 0)
         leftButtonPos = vector(1.5, 2, 0.6)
         rightButtonPos = vector(1.5, 2, -0.6)
@@ -57,6 +56,7 @@ function Calculate.AddChoiceButtons(args)
         hover_color    = args.leftHoverColor,
         press_color    = args.leftHoverColor,
         font_color     = color(0, 0, 0, 1),
+        tooltip        = args.leftText
     })
     
     args.obj.createButton({
@@ -71,6 +71,30 @@ function Calculate.AddChoiceButtons(args)
         hover_color    = args.rightHoverColor,
         press_color    = args.rightHoverColor,
         font_color     = color(0, 0, 0, 1),
+        tooltip        = args.rightText
+    })
+end
+
+function Calculate.AddDescriptionButton(args)
+    local centerButtonPos = vector(-0.6, 2, 1.9)
+    if args.isBase then
+        rot = vector(0, -90, 0)
+        centerButtonPos = vector(1.5, 2, 0)
+    end
+    
+    args.obj.createButton({
+        click_function = "Dummy",
+        label          = args.text,
+        position       = centerButtonPos,
+        rotation       = rot,
+        width          = 800,
+        height         = 300,
+        font_size      = 150,
+        color          = color(200, 200, 200, 1),
+        hover_color    = color(200, 200, 200, 1),
+        press_color    = color(200, 200, 200, 1),
+        font_color     = color(0, 0, 0, 1),
+        tooltip        = args.text
     })
 end
 
@@ -82,7 +106,7 @@ function Keep(obj, player_clicker_color, alt_click)
     obj.editButton({ index = 1, color = Calculate.inactiveButtonColour })
     
     Calculate.cardStates[obj.getGUID()].scrapping = false
-    Calculate.DoTheMath()
+    Calculate.DoAllTheMath()
 end
 
 function Scrap(obj, player_clicker_color, alt_click)
@@ -93,7 +117,7 @@ function Scrap(obj, player_clicker_color, alt_click)
     obj.editButton({ index = 1, color = color(200, 0, 0, 1) })
     
     Calculate.cardStates[obj.getGUID()].scrapping = true
-    Calculate.DoTheMath()
+    Calculate.DoAllTheMath()
 end
 
 
@@ -105,7 +129,7 @@ function OptA(obj, player_clicker_color, alt_click)
     obj.editButton({ index = 1, color = Calculate.inactiveButtonColour })
     
     Calculate.cardStates[obj.getGUID()].choiceA = true
-    Calculate.DoTheMath()
+    Calculate.DoAllTheMath()
 end
 
 function OptB(obj, player_clicker_color, alt_click)
@@ -116,5 +140,8 @@ function OptB(obj, player_clicker_color, alt_click)
     obj.editButton({ index = 1, color = color(0, 200, 0, 1) })
     
     Calculate.cardStates[obj.getGUID()].choiceA = false
-    Calculate.DoTheMath()
+    Calculate.DoAllTheMath()
+end
+
+function Dummy()
 end

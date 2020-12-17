@@ -1,0 +1,102 @@
+
+local UniqueHandlers = {
+    ["The Incinerator"] = {
+        onLoad = function(cardObj, tablau, calculationZone)
+            -- Make a global method for this card's callback
+            _G['incineratorCallback' .. cardObj.getGUID()] = function(obj, color, val)
+                log("Typed: " .. val)
+                Calculate.cardStates[cardObj.getGUID()] = { value = val }
+                Calculate.DoTheMath(calculationZone)
+            end
+            
+            cardObj.createInput({
+                input_function = 'incineratorCallback' .. cardObj.getGUID(),
+                label          = "Combat",
+                -- alignment      = -- int (1 = Automatic, 2 = Left, 3 = Center, 4 = Right, 5 = Justified),
+                position       = vector(1.5, 2, 0),
+                rotation       = vector(0, -90, 0),
+                --scale          = -- Vector,
+                width          = 800,
+                height         = 250,
+                font_size      = 200,
+                color          = color(200, 200, 200, 1),
+                font_color     = color(0, 0, 0, 1),
+                --tooltip        = -- Color,
+                value          = Calculate.cardStates[cardObj.getGUID()].value,
+                validation     = 2,-- int (1 = None, 2 = Integer, 3 = Float, 4 = Alphanumeric, 5 = Username, 6 = Name),
+                tab            = 1-- int (1 = None, 2 = Select Next, 3 = Indent),
+            })
+        end,
+        onEnterPlay = function(cardObj, tablau, calculationZone)
+            -- Make a global method for this card's callback
+            _G['incineratorCallback' .. cardObj.getGUID()] = function(obj, color, val)
+                log("Typed: " .. val)
+                Calculate.cardStates[cardObj.getGUID()] = { value = val }
+                Calculate.DoTheMath(calculationZone)
+            end
+            
+            cardObj.createInput({
+                input_function = 'incineratorCallback' .. cardObj.getGUID(),
+                label          = "Combat",
+                -- alignment      = -- int (1 = Automatic, 2 = Left, 3 = Center, 4 = Right, 5 = Justified),
+                position       = vector(1.5, 2, 0),
+                rotation       = vector(0, -90, 0),
+                --scale          = -- Vector,
+                width          = 800,
+                height         = 250,
+                font_size      = 200,
+                color          = color(200, 200, 200, 1),
+                font_color     = color(0, 0, 0, 1),
+                --tooltip        = -- Color,
+                value          = "",
+                validation     = 2,-- int (1 = None, 2 = Integer, 3 = Float, 4 = Alphanumeric, 5 = Username, 6 = Name),
+                tab            = 1-- int (1 = None, 2 = Select Next, 3 = Indent),
+            })
+        end,
+        onCalculate = function(cardObj)
+            -- log(cardObj.getInputs())
+            -- return {
+            --     combat = tonumber(cardObj.getInputs()[1].value)
+            -- }
+            return {}
+        end
+    },
+    ["Command Center"] = {
+        onLoad = function(cardObj, tablau)
+            Calculate.AddDescriptionButton({
+                    obj = cardObj,
+                    text = "0 Combat",
+                    isBase = true
+            })
+        end,
+        onEnterPlay = function(cardObj, tablau)
+            local yellowInPlay = tablau.factionCounts[Calculate.FactionNames["Star Empire"]]
+            
+            -- Remember how many yellow cards were in play
+            Calculate.cardStates[cardObj.getGUID()] = { starEmpireAlreadyInPlay = yellowInPlay }
+            Calculate.AddDescriptionButton({
+                    obj = cardObj,
+                    text = "0 Combat",
+                    isBase = true
+            })
+            
+            cardObj.setDescription("")
+        end,
+        onCalculate = function(cardObj, tablau)
+            local yellowInPlay = tablau.factionCounts[Calculate.FactionNames["Star Empire"]]
+            local cardsPlayedAfterMe = yellowInPlay - Calculate.cardStates[cardObj.getGUID()].starEmpireAlreadyInPlay
+            
+            cardObj.setDescription(cardsPlayedAfterMe .. " Star empire cards have been played after me")
+            
+            cardObj.editButton({
+                index          = 0,
+                label          = (cardsPlayedAfterMe * 2) .. " Combat",
+                tooltip        = (cardsPlayedAfterMe * 2) .. " Combat"
+            })
+            
+            return {
+                combat = cardsPlayedAfterMe * 2
+            }
+        end
+    }
+}

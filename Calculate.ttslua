@@ -1,6 +1,7 @@
 
 local Calculate = {}
 #include CalculateGUI
+#include CalculateUnique
 
 Calculate.zoneId = '162f27'
 
@@ -32,95 +33,193 @@ Calculate.tableGuid = '4ee1f2'
 Calculate.calculationZones = {
     {
         zoneId = '162f27',
-        outputCombat = 'be47c5'
+        output = {
+            combat = 'be47c5',
+            trade = 'a01a94',
+            authority = '5bd49b'
+        }
+    },
+    {
+        zoneId = '46069f',
+        output = {
+            combat = 'b4e120',
+            trade = '731d76',
+            authority = '375ae4'
+        }
+    },
+    {
+        zoneId = '0d0c2d',
+        output = {
+            combat = '8f46d3',
+            trade = '2ad0f5',
+            authority = '2d59be'
+        }
+    },
+    {
+        zoneId = '191210',
+        output = {
+            combat = '401614',
+            trade = '657e88',
+            authority = 'bc29f6'
+        }
+    },
+    {
+        zoneId = '0ed419',
+        output = {
+            combat = 'e1818b',
+            trade = 'b57891',
+            authority = 'a92a56'
+        }
     }
 }
 
-function Calculate.init()
-
-    Calculate.table = getObjectFromGUID(Calculate.tableGuid)
-    
-    Calculate.combatToken = getObjectFromGUID(Calculate.combatTokenGuid)
-    Calculate.combatToken.createButton({
-        click_function = "YoureNotSupposedToClickThis",
-        label          = "",
-        position       = vector(0, 0.2, 0),
-        width          = 0,
-        height         = 0,
-        font_size      = 600,
-        color          = color(0, 0, 0, 1),
-        font_color     = color(0.2, 0.2, 0.2, 1),
-    })
-    
-    Calculate.DoTheMath()
+function onSave()
+    local data = JSON.encode(Calculate.cardStates)
+    log(data)
+    return data
 end
 
-function onObjectEnterScriptingZone(zone, obj)
-    if zone.getGUID() == Calculate.zoneId then
-        Calculate.DoTheMath(obj)
-    end
-end
-
-function onObjectLeaveScriptingZone(zone, obj)
-    if zone.getGUID() == Calculate.zoneId then
-        Calculate.DoTheMath()
-        
-        if obj.getButtons() ~= nil then
-            obj.clearButtons()
-            Calculate.cardStates[obj.getGUID()] = nil
-        end
-    end
-end
-
-function Calculate.DoTheMath(draggedObj)
-    local zone = getObjectFromGUID(Calculate.zoneId)
-    local allCards = zone.getObjects()
-    
-    local factionCounts = {
-        0, 0, 0, 0, 0
+function Calculate.calculateTableu(allCards)
+    local tablau = {
+        factionCounts = {
+            0, 0, 0, 0, 0
+        },
+        shipCount = 0,
+        baseCount = 0
     };
     
-    -- TODO: Make sure the object is not in the table yet
-    if draggedObj != nil then
-        table.insert(allCards, draggedObj)
-    end
-    
-    -- Get all the cards to use in the calculation (resting cards with names)
+    -- Get all the cards to use in the calculation (cards with names)
     local cards = {}
     for i, e in pairs(allCards) do
         local name = e.getName()
-        if name ~= nil and name ~= "" and e.name == "Card" and e.resting then
-            table.insert(cards, {
-                name = name,
-                obj = e
-            })
-            
-            log("Name = " .. name)
-            log("Faction = " .. CardLibrary[name].faction)
+        if name ~= nil and name ~= "" and e.name == "Card" then -- and e.resting
+            table.insert(cards, e)
             
             local factionNum = Calculate.FactionNames[CardLibrary[name].faction]
-            factionCounts[factionNum] = factionCounts[factionNum] + 1
+            tablau.factionCounts[factionNum] = tablau.factionCounts[factionNum] + 1
+            
+            if CardLibrary[name].type == "Base" then
+                tablau.baseCount = tablau.baseCount + 1
+            else
+                tablau.shipCount = tablau.shipCount + 1
+            end
         end
     end
     
-    log("Doing the math")
+    return tablau, cards;
+end
+
+function Calculate.init(save_state)
+    Calculate.table = getObjectFromGUID(Calculate.tableGuid)
+    
+    -- Lock down the player mats so that you can alt-zoom in on cards without also zooming in on the mat
+    getObjectFromGUID('33357f').interactable = false
+    getObjectFromGUID('fdac92').interactable = false
+    getObjectFromGUID('afbd4b').interactable = false
+    getObjectFromGUID('0a9718').interactable = false
+    getObjectFromGUID('087f19').interactable = false
+    
+    for i, calculationZone in pairs(Calculate.calculationZones) do
+        Calculate.CreateLabelButton(calculationZone.output.combat)
+        Calculate.CreateLabelButton(calculationZone.output.trade)
+        Calculate.CreateLabelButton(calculationZone.output.authority)
+    end
+    
+    if save_state ~= "" then
+        log("Saved data is:")
+        log(save_state)
+        Calculate.cardStates = JSON.decode(save_state)
+    end
+    
+    for i, calculationZone in pairs(Calculate.calculationZones) do
+        local zone = getObjectFromGUID(calculationZone.zoneId)
+        local allCards = zone.getObjects()
+        
+        local tablau, cards = Calculate.calculateTableu(allCards)
+        
+        -- ################################
+        -- Trigger any on-load logic
+        -- ################################
+        for i, card in pairs(cards) do
+            local name = card.getName()
+            if UniqueHandlers[name] ~= nil and UniqueHandlers[name].onLoad ~= nil then
+                UniqueHandlers[name].onLoad(card, tablau, calculationZone)
+            end
+        end
+    end
+    
+    Calculate.DoAllTheMath()
+end
+
+function Calculate.onObjectEnterScriptingZone(zone, obj)
+    for i, calculationZone in pairs(Calculate.calculationZones) do
+        if calculationZone.zoneId == zone.getGUID() then
+            -- log("Entering table!")
+            Calculate.DoTheMath(calculationZone, obj)
+        end
+    end
+end
+
+function Calculate.onObjectLeaveScriptingZone(zone, obj)
+    for i, calculationZone in pairs(Calculate.calculationZones) do
+        if calculationZone.zoneId == zone.getGUID() then
+            -- log("Leaving Table!")
+            Calculate.DoTheMath(calculationZone)
+            
+            if obj.name == "Card" then
+                obj.clearButtons()
+                obj.clearInputs()
+                Calculate.cardStates[obj.getGUID()] = nil
+            end
+        end
+    end
+end
+
+function Calculate.DoAllTheMath()
+    for i, calculationZone in pairs(Calculate.calculationZones) do
+        Calculate.DoTheMath(calculationZone)
+    end
+end
+
+function Calculate.DoTheMath(calculationZone, draggedObj)
+    local zone = getObjectFromGUID(calculationZone.zoneId)
+    local allCards = zone.getObjects()
+    
+    -- TODO: Make sure the object is not in the table yet
+    if draggedObj ~= nil then
+        table.insert(allCards, draggedObj)
+    end
+    
+    local tablau, cards = Calculate.calculateTableu(allCards)
+    
+    log("Doing the math " .. math.random(0, 1000))
+    
+    -- ################################
+    -- Trigger any on-enter logic
+    -- ################################
+    if draggedObj ~= nil and UniqueHandlers[draggedObj.getName()] ~= nil and UniqueHandlers[draggedObj.getName()].onEnterPlay ~= nil then
+        UniqueHandlers[draggedObj.getName()].onEnterPlay(draggedObj, tablau, calculationZone)
+    end
     
     local trade = 0
     local combat = 0
     local authority = 0
     for i, card in pairs(cards) do
-        local name = card.name
+        local name = card.getName()
         
         trade = trade + (CardLibrary[name].main.trade or 0)
         combat = combat + (CardLibrary[name].main.combat or 0)
         authority = authority + (CardLibrary[name].main.authority or 0)
         
+        -- ################################
+        -- Handle regular OR conditions
+        -- ################################
         if CardLibrary[name].main.xor ~= nil then
             
             local xor = CardLibrary[name].main.xor
             
             -- Create the buttons
-            if card.obj.getButtons() == nil then
+            if card.getButtons() == nil then
                 local keys = {}
                 for k,v in pairs(xor) do
                     if k == "combat" then
@@ -137,19 +236,22 @@ function Calculate.DoTheMath(draggedObj)
                 end
                 
                 Calculate.AddArbitraryChoiceButtons({
-                    obj = card.obj,
+                    obj = card,
                     isBase = CardLibrary[name].type == "Base",
                     leftText = keys[1],
                     rightText = keys[2],
                 })
                 
-                Calculate.cardStates[card.obj.getGUID()] = { choiceA = true }
+                if Calculate.cardStates[card.getGUID()] == nil then
+                    Calculate.cardStates[card.getGUID()] = {}
+                end
+                Calculate.cardStates[card.getGUID()].choiceA = true
             end
             
             -- Do the math on the chosen item
             local firstChoice = true
             for k,v in pairs(xor) do
-                if (firstChoice and Calculate.cardStates[card.obj.getGUID()].choiceA) or (not firstChoice and not Calculate.cardStates[card.obj.getGUID()].choiceA) then
+                if (firstChoice and Calculate.cardStates[card.getGUID()].choiceA) or (not firstChoice and not Calculate.cardStates[card.getGUID()].choiceA) then
                     if k == "combat" then
                         combat = combat + v
                     elseif k == "trade" then
@@ -162,40 +264,91 @@ function Calculate.DoTheMath(draggedObj)
             end
         end
         
+        -- ################################
+        -- Handle ally conditions
+        -- ################################
         local factionNum = Calculate.FactionNames[CardLibrary[name].faction]
-        if factionCounts[factionNum] > 1 and CardLibrary[name].ally ~= nil then
+        if tablau.factionCounts[factionNum] > 1 and CardLibrary[name].ally ~= nil then
             trade = trade + (CardLibrary[name].ally.trade or 0)
             combat = combat + (CardLibrary[name].ally.combat or 0)
             authority = authority + (CardLibrary[name].ally.authority or 0)
         end
         
+        -- ################################
+        -- Handle scrapping
+        -- ################################
         if CardLibrary[name].scrap ~= nil then
-            if card.obj.getButtons() == nil then
+            if card.getButtons() == nil then
                 Calculate.AddScrapChoiceButtons({
-                    obj = card.obj,
+                    obj = card,
                     isBase = CardLibrary[name].type == "Base"
                 })
                 
-                Calculate.cardStates[card.obj.getGUID()] = { scrapping = false }
+                if Calculate.cardStates[card.getGUID()] == nil then
+                    Calculate.cardStates[card.getGUID()] = {}
+                end
+                Calculate.cardStates[card.getGUID()].scrapping = false
             end
             
-            if Calculate.cardStates[card.obj.getGUID()].scrapping then
+            if Calculate.cardStates[card.getGUID()].scrapping then
                 trade = trade + (CardLibrary[name].scrap.trade or 0)
                 combat = combat + (CardLibrary[name].scrap.combat or 0)
                 authority = authority + (CardLibrary[name].scrap.authority or 0)
             end
         end
+        
+        -- ################################
+        -- Handle Unique conditions
+        -- ################################
+        if UniqueHandlers[name] ~= nil and UniqueHandlers[name].onCalculate ~= nil then
+            local uniqueCalculation = UniqueHandlers[name].onCalculate(card, tablau)
+            trade = trade + (uniqueCalculation.trade or 0)
+            combat = combat + (uniqueCalculation.combat or 0)
+            authority = authority + (uniqueCalculation.authority or 0)
+        end
     end
     
-    log(trade .. " Trade")
-    log(combat .. " Combat")
-    log(authority .. " Authority")
+    -- log(trade .. " Trade")
+    -- log(combat .. " Combat")
+    -- log(authority .. " Authority")
     
-    Calculate.combatToken.editButton({
+    Calculate.UpdateOutputTokens(calculationZone, combat, trade, authority)
+end
+
+function Calculate.CreateLabelButton(tokenGuid)
+    local token = getObjectFromGUID(tokenGuid)
+    token.createButton({
+        click_function = "YoureNotSupposedToClickThis",
+        label          = "",
+        position       = vector(0, 0.2, 0),
+        width          = 0,
+        height         = 0,
+        font_size      = 600,
+        color          = color(0, 0, 0, 1),
+        font_color     = color(0.2, 0.2, 0.2, 1),
+    })
+end
+
+function Calculate.UpdateOutputTokens(calculationZone, combat, trade, authority)
+    local combatToken = getObjectFromGUID(calculationZone.output.combat)
+    local tradeToken = getObjectFromGUID(calculationZone.output.trade)
+    local authorityToken = getObjectFromGUID(calculationZone.output.authority)
+    
+    combatToken.editButton({
         index = 0,
         label = combat,
     })
-    -- log(Calculate.combatToken.getName())
-    Calculate.combatToken.setName(combat .. " Combat")
+    combatToken.setName(combat .. " Combat")
     
+    tradeToken.editButton({
+        index = 0,
+        label = trade,
+    })
+    tradeToken.setName(trade .. " Trade")
+    
+    authorityToken.editButton({
+        index = 0,
+        label = authority,
+    })
+    authorityToken.setName("+" .. authority .. " Authority")
 end
